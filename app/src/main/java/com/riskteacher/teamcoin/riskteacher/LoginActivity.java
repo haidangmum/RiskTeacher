@@ -85,4 +85,14 @@ public class LoginActivity extends AppCompatActivity {
         }
         return result;
     }
+
+    public void createAccount(View view){
+        Intent intent = new Intent(this,CreateUser.class);
+        startActivity(intent);
+    }
+
+    public void forgotPassword(View view){
+        Intent intent = new Intent(this,ForgotPass.class);
+        startActivity(intent);
+    }
 }
