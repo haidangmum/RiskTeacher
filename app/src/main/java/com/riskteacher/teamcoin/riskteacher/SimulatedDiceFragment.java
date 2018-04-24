@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,12 +19,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class SimulatedDiceFragment extends Fragment {
+
+    Handler handler = new Handler();
+    int kTimer=1;
+
+    Runnable runnable = new Runnable() {
+        public void run() {
+            afficher();
+        }
+    };
+    BigDecimal initSize;
 
     public SimulatedDiceFragment() {
         // Required empty public constructor
@@ -36,11 +48,16 @@ public class SimulatedDiceFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_simulated_dice, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         SharedPreferences spf = getActivity().getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
+        SharedPreferences.Editor spe = spf.edit();
+        spe.putBoolean("auto",false);
+        spe.putInt("timerConf", 2);
+        spe.commit();
         String user = spf.getString("user","");
         String balance = spf.getString("balance","");
         TextView tv1 = getActivity().findViewById(R.id.tvNBalance);
@@ -55,21 +72,19 @@ public class SimulatedDiceFragment extends Fragment {
         buyBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                opBuy(view);
+                opBuy();
             }
         });
-
         sellBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                opSell(view);
+                opSell();
             }
         });
-
         autoBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                opAuto(view);
+                opAuto();
             }
         });
     }
@@ -95,7 +110,7 @@ public class SimulatedDiceFragment extends Fragment {
         builder.show();
     }
 
-    public void opBuy(View view) {
+    public void opBuy() {
         BigDecimal BetSize = getBetSize();
         BigDecimal Balance = getBalance();
         BigDecimal newBal = new BigDecimal(0);
@@ -140,7 +155,7 @@ public class SimulatedDiceFragment extends Fragment {
         }
     }
 
-    public void opSell(View view) {
+    public void opSell() {
         BigDecimal BetSize = getBetSize();
         BigDecimal Balance = getBalance();
         BigDecimal newBal = new BigDecimal(0);
@@ -185,47 +200,25 @@ public class SimulatedDiceFragment extends Fragment {
         }
     }
 
-    public void opAuto(final View view) {
+    public void opAuto() {
         SharedPreferences spf = getActivity().getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
         boolean autorunning = spf.getBoolean("auto",false);
-        Timer timer = new Timer();
+        kTimer = spf.getInt("timerConf", 1);
         if(autorunning){
             SharedPreferences.Editor spe = spf.edit();
             spe.putBoolean("auto",false);
             spe.commit();
             Button bt1 = getActivity().findViewById(R.id.buttonAuto);
             bt1.setText("AUTO");
-            timer.cancel();
-            timer.purge();
+            resetBetSize();
         }else{
             SharedPreferences.Editor spe = spf.edit();
             spe.putBoolean("auto",true);
             spe.commit();
             Button bt1 = getActivity().findViewById(R.id.buttonAuto);
             bt1.setText("STOP");
-            final BigDecimal initSize = getBetSize();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    getActivity().runOnUiThread(new Runnable(){
-                        @Override
-                        public void run(){
-                            BigDecimal tempval = getBetSize();
-                            EditText betsize = (EditText) getActivity().findViewById(R.id.etsize);
-                            SharedPreferences spf = getActivity().getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
-                            int pastop = spf.getInt("lastop",1);
-                            if(pastop<0){
-                                //TextView txtClicks = (TextView) findViewById(R.id.txtClicks);
-                                // task to be done every 1000 milliseconds
-                                betsize.setText(tempval.multiply(new BigDecimal(3)).setScale(2, RoundingMode.HALF_UP).toString());
-                            }else if(pastop>0){
-                                betsize.setText(initSize.toString());
-                            }
-                            opBuy(view);
-                        }
-                    });
-                }
-            }, 0, 3000);
+            setInitSize(getBetSize());
+            runnable.run();
         }
     }
 
@@ -287,6 +280,42 @@ public class SimulatedDiceFragment extends Fragment {
 
     public int genRandom(){
         return ((int) (Math.random() * 99) + 1);
+    }
+
+    public void afficher()
+    {
+        SharedPreferences spf = getActivity().getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
+        boolean autorunning = spf.getBoolean("auto",false);
+        int TimerDelay = 1000*kTimer;
+        if(autorunning) {
+
+            BigDecimal tempval = getBetSize();
+            EditText betsize = (EditText) getActivity().findViewById(R.id.etsize);
+            spf = getActivity().getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
+            int pastop = spf.getInt("lastop", 1);
+            if (pastop < 0) {
+                //TextView txtClicks = (TextView) findViewById(R.id.txtClicks);
+                // task to be done every 1000 milliseconds
+                betsize.setText(tempval.multiply(new BigDecimal(3)).setScale(2, RoundingMode.HALF_UP).toString());
+            } else if (pastop > 0) {
+                resetBetSize();
+            }
+            opBuy();
+            handler.postDelayed(runnable, TimerDelay);
+        }
+    }
+
+    public void setInitSize(BigDecimal x){
+        initSize = x;
+    }
+
+    public void resetBetSize(){
+        EditText betsize = (EditText) getActivity().findViewById(R.id.etsize);
+        betsize.setText(getInitSize().toString());
+    }
+
+    public BigDecimal getInitSize(){
+        return initSize;
     }
 
 }
