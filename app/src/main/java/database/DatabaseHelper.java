@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.riskteacher.teamcoin.riskteacher.RTOperation;
 import com.riskteacher.teamcoin.riskteacher.RTUser;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Database Name
     private static final String DATABASE_NAME = "RiskTeacher";
@@ -33,6 +34,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String REAL_ACC_VAL = "realAccVal";
     private static final String REAL_ACC_SECRET = "realAccSecret";
 
+    private static final String OP_TABLE_NAME = "OpHistory";
+
+    private static final String OP_ID = "id";
+    private static final String OP_USERNAME = "username";
+    private static final String OP_TYPE = "opType";
+    private static final String OP_BALANCE = "balance";
+    private static final String OP_PROFIT = "opProfit";
+    private static final String OP_RESULT = "opResult";
+    private static final String OP_DATE = "opDate";
+
     // CreateQuery String
 
     private final String CREATE_TABLE = "CREATE TABLE " + USER_TABLE_NAME + "("
@@ -48,6 +59,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + REAL_ACC_SECRET + " TEXT"
             + ")";
 
+    private final String CREATE_TABLE2 = "CREATE TABLE " + OP_TABLE_NAME + "("
+            + OP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            + OP_USERNAME + " TEXT,"
+            + OP_TYPE + " TEXT,"
+            + OP_BALANCE + " TEXT,"
+            + OP_PROFIT + " TEXT,"
+            + OP_RESULT + " TEXT,"
+            + OP_DATE + " TEXT"
+            + ")";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -55,13 +76,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(CREATE_TABLE);
+        sqLiteDatabase.execSQL(CREATE_TABLE2);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         // Drop older table if existed
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + USER_TABLE_NAME);
-
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + OP_TABLE_NAME);
         // Create tables again
         onCreate(sqLiteDatabase);
     }
@@ -77,6 +99,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // insert row
         long id = db.insert(USER_TABLE_NAME, null, values);
+
+        // close db connection
+        db.close();
+
+        // return newly inserted row id
+        return id;
+    }
+
+    public long insertOperation(RTOperation operation) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(OP_USERNAME, operation.getUsername());
+        values.put(OP_TYPE, operation.getOpType());
+        values.put(OP_BALANCE, operation.getBalance().toString());
+        values.put(OP_PROFIT, operation.getOpProfit().toString());
+        values.put(OP_RESULT, operation.getOpResult());
+        values.put(OP_DATE, operation.getOpDate());
+        // insert row
+        long id = db.insert(OP_TABLE_NAME, null, values);
 
         // close db connection
         db.close();
@@ -136,5 +179,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // return notes list
         return users;
+    }
+
+    public List<RTOperation> getUserOperations(String user) {
+        List<RTOperation> operations = new ArrayList<>();
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + OP_TABLE_NAME + " WHERE " + OP_USERNAME + " = ?";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, new String[] {user});
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                RTOperation operation = new RTOperation(cursor.getString(cursor.getColumnIndex(OP_USERNAME)),
+                        cursor.getString(cursor.getColumnIndex(OP_TYPE)),
+                        new BigDecimal(cursor.getString(cursor.getColumnIndex(OP_BALANCE))),
+                        new BigDecimal(cursor.getString(cursor.getColumnIndex(OP_PROFIT))),
+                        cursor.getString(cursor.getColumnIndex(OP_RESULT)),
+                        cursor.getString(cursor.getColumnIndex(OP_DATE)));
+
+                operations.add(operation);
+            } while (cursor.moveToNext());
+        }
+
+        // close db connection
+        db.close();
+
+        // return notes list
+        return operations;
+    }
+
+    public int delUserOperations(String user){
+        SQLiteDatabase db = this.getWritableDatabase();
+        int ans = db.delete(OP_TABLE_NAME,OP_USERNAME+"=?",new String[] {user});
+        return ans;
     }
 }
