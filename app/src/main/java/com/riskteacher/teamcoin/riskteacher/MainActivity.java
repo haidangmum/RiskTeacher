@@ -86,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     return new SimulatedDiceFragment();
                 case 2:
-                    break;
+                    return new SettingsFragment();
                 case 3:
-                    break;
+                    return new AboutUsFragment();
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 5;
+            return 4;
         }
     }
 
