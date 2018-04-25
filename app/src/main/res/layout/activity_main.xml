@@ -25,6 +25,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:layout_scrollFlags="scroll|enterAlways">
 
+
         </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
