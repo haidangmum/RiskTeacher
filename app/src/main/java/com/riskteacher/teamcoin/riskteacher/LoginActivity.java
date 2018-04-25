@@ -1,5 +1,6 @@
 package com.riskteacher.teamcoin.riskteacher;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,25 +15,23 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import database.DatabaseHelper;
+
 public class LoginActivity extends AppCompatActivity {
 
-    public List<RTUser> wusers = new ArrayList<RTUser>();
+    public List<RTUser> wusers;
+    DatabaseHelper dbHelper;
     public RTUser currenUser;
     EditText etu;
     EditText etp;
-    RTUser firstUser = new RTUser("u","p");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // first user creation
-        firstUser.setRtbalance(new BigDecimal(1000));
-        firstUser.setRtemail("acorchuelo@mum.edu");
-
-        // add user to temp storage
-        wusers.add(firstUser);
+        dbHelper = new DatabaseHelper(this);
+        wusers = dbHelper.getAllUsers();
 
         SharedPreferences spf = getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
         String user = spf.getString("user","");
@@ -49,8 +48,8 @@ public class LoginActivity extends AppCompatActivity {
         etp = (EditText) findViewById(R.id.etpass);
         String inputuser = etu.getText().toString();
         String inputpass = etp.getText().toString();
-        currenUser = new RTUser(inputuser,inputpass);
-        if(validateUser(currenUser)){
+        RTUser loginUser = new RTUser(inputuser,inputpass);
+        if(validateUser(loginUser)){
             String output = "Sign in to your account";
             TextView tv = (TextView) findViewById(R.id.tv01);
             tv.setText(output);
@@ -58,10 +57,10 @@ public class LoginActivity extends AppCompatActivity {
             SharedPreferences spf = getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
             SharedPreferences.Editor spe = spf.edit();
             //change this part to not use first user, instead use actual user from database
-            spe.putString("user",firstUser.getRtuser());
-            spe.putString("pass",firstUser.getRtpass());
-            spe.putString("email",firstUser.getRtemail());
-            spe.putString("balance",firstUser.getRtbalance().toString());
+            spe.putString("user",currenUser.getRtuser());
+            spe.putString("pass",currenUser.getRtpass());
+            spe.putString("email",currenUser.getRtemail());
+            spe.putString("balance",currenUser.getRtbalance().toString());
             spe.putBoolean("auto",false);
             spe.commit();
 
@@ -82,17 +81,34 @@ public class LoginActivity extends AppCompatActivity {
         boolean result = false;
         for (RTUser w2:wusers) {
             result = result||w2.verifyUser(wu);
+            if (result){currenUser = w2;}
         }
         return result;
     }
 
     public void createAccount(View view){
-        Intent intent = new Intent(this,CreateUser.class);
-        startActivity(intent);
+        Intent i = new Intent(this, CreateUser.class);
+        startActivityForResult(i, 1);
     }
 
     public void forgotPassword(View view){
         Intent intent = new Intent(this,ForgotPass.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1){
+            if (resultCode == Activity.RESULT_OK){
+                String username = data.getStringExtra("username");
+                String password = data.getStringExtra("password");
+
+                etu.setText(username);
+                etp.setText(password);
+
+            }else if (resultCode == Activity.RESULT_CANCELED){
+
+            }
+        }
     }
 }

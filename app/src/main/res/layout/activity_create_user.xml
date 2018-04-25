@@ -42,28 +42,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="First name*" />
+                android:text="Username*" />
 
             <EditText
-                android:id="@+id/firstname_edittext"
+                android:id="@+id/username_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector_border"
-                android:padding="5dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:text="Last name*" />
-
-            <EditText
-                android:id="@+id/lastname_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selector_border"
-                android:inputType="textPassword"
                 android:padding="5dp" />
 
             <TextView
