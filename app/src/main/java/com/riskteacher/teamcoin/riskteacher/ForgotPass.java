@@ -32,7 +32,7 @@ public class ForgotPass extends AppCompatActivity {
 
         submit_button = (Button) findViewById(R.id.submit_button);
         email_edt = (EditText) findViewById(R.id.forgot_email_edit_text);
-        send_email = findViewById(R.id.send_email);
+//        send_email = findViewById(R.id.send_email);
 
         submit_button.setOnClickListener(new OnClickListener() {
             @Override
