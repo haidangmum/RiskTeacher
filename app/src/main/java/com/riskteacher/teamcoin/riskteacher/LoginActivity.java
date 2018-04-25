@@ -31,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         dbHelper = new DatabaseHelper(this);
-        wusers = dbHelper.getAllUsers();
 
         SharedPreferences spf = getSharedPreferences("RiskTeacher", Context.MODE_PRIVATE);
         String user = spf.getString("user","");
@@ -41,6 +40,12 @@ public class LoginActivity extends AppCompatActivity {
         etu.setText(user);
         etp.setText(pwd);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        wusers = dbHelper.getAllUsers();
     }
 
     public void signIn(View view){
