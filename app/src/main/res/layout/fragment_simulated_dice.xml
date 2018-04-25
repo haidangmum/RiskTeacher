@@ -41,8 +41,11 @@
             android:layout_marginRight="5sp"
             android:text="name /"
             android:layout_toLeftOf="@+id/tvlogout"
-            android:textColor="@color/colorGr"
-            />
+            android:textColor="@color/colorF"
+            android:autoLink="all"
+            android:clickable="true"
+            android:background="@color/colorB"
+            android:onClick="logOut"            />
     </RelativeLayout>
 
 

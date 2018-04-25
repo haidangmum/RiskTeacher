@@ -25,4 +25,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="test1">hi</string>
+    <string name="Settings"></string>
+    <string name="sttxt1">Settings</string>
+    <string name="stparam1t">Deposit</string>
+    <string name="stparam2t">Withdraw</string>
+
 </resources>
