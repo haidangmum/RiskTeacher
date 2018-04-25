@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
                 case 0:
-                    break;
+                    return new Lessons();
                 case 1:
                     return new SimulatedDiceFragment();
                 case 2:
@@ -153,4 +153,5 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("No",listener);
         builder.show();
     }
+
 }

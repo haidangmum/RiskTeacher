@@ -1,5 +1,7 @@
 package com.riskteacher.teamcoin.riskteacher;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.Data;
 import android.support.design.widget.FloatingActionButton;
@@ -16,7 +18,7 @@ import database.DatabaseHelper;
 
 public class ForgotPass extends AppCompatActivity {
 
-    private Button submit_button;
+    private Button submit_button, send_email;
     private EditText    email_edt;
     private DatabaseHelper db;
     @Override
@@ -30,6 +32,7 @@ public class ForgotPass extends AppCompatActivity {
 
         submit_button = (Button) findViewById(R.id.submit_button);
         email_edt = (EditText) findViewById(R.id.forgot_email_edit_text);
+        send_email = findViewById(R.id.send_email);
 
         submit_button.setOnClickListener(new OnClickListener() {
             @Override
@@ -41,6 +44,20 @@ public class ForgotPass extends AppCompatActivity {
                 }else{
                     Toast.makeText(ForgotPass.this, "This email have not been registered", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        send_email.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gmail = new Intent(Intent.ACTION_VIEW);
+                gmail.setClassName("com.google.android.gm","com.google.android.gm.ComposeActivityGmail");
+                gmail.putExtra(Intent.EXTRA_EMAIL, new String[] { "teamcoin@gmail.com" });
+                gmail.setData(Uri.parse("teamcoin@gmail.com"));
+                gmail.putExtra(Intent.EXTRA_SUBJECT, "Forgot Password Request");
+                gmail.setType("message/rfc822");
+                gmail.putExtra(Intent.EXTRA_TEXT, "Your request here!");
+                startActivity(gmail);
             }
         });
     }

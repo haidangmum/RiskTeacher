@@ -42,7 +42,8 @@
         <activity
             android:name=".CreateUser"
             android:label="@string/title_activity_create_user"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".LessonDisplay"></activity>
     </application>
 
 </manifest>
