@@ -128,4 +128,12 @@ public class SettingsFragment extends Fragment {
         builder.setNegativeButton("No",listener);
         builder.show();
     }
+
+    public void makedeposit(View view){
+
+    }
+
+    public void makewithdraw(View view){
+
+    }
 }
