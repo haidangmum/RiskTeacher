@@ -43,17 +43,13 @@
                 android:id="@+id/tabItem2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=
-"Paper
-Money" />
+                android:text= "Paper Money" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=
-"Real
- Money" />
+                android:text="Real Money" />
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem4"
@@ -65,7 +61,7 @@ Money" />
                 android:id="@+id/tabItem5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="AboutUs" />
+                android:text="About Us" />
 
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>

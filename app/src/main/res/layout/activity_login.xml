@@ -81,6 +81,7 @@
         android:layout_marginRight="20sp"
         android:text="*Forgot your password"
         android:textColor="@color/colorGr"
+        android:onClick="forgotPassword"
         />
 
     <Button
@@ -116,7 +117,8 @@
         android:gravity="center_horizontal"
         android:text="Create New Account"
         android:textColor="@color/colorB"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:onClick="createAccount"/>
 
 
 </LinearLayout>
